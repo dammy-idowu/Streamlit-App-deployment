@@ -2,4 +2,4 @@ import streamlit as st
 
 st.title('🎈 DocPal')
 
-st.write('Your disease diagnostic assistant!')
+st.info('Your disease diagnostic assistant!')
