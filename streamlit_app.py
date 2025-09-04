@@ -59,13 +59,12 @@ user_friendly_feature_names = {
     'bitter_taste_in_your_throat': 'Bitter taste in your throat',
     'stiffness': 'Stiffness',
     'respiratory_distress': 'Respiratory distress',
-    'shock': 'Shock',
-    # ... up to symptom_41
+    'shock': 'Shock',    # ... up to symptom_41
 }
 
 
-for i in range(1, 42):
-    user_friendly_feature_names[f'symptom_{i}'] = f'Symptom {i}'
+# for i in range(1, 42):
+#     user_friendly_feature_names[f'symptom_{i}'] = f'Symptom {i}'
 
 
 user_friendly_disease_names = {
