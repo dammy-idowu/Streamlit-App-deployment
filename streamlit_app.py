@@ -64,7 +64,7 @@ user_friendly_feature_names = {
 }
 
 for i in range(1, 42):
-    user_friendly_feature_names[f'symptom_{i}'] = f'Symptom {i}'
+    f'Symptom {i}' = user_friendly_feature_names[f'symptom_{i}']
 
 user_friendly_disease_names = {
     '4': ['Malaria', 'Denque'],
