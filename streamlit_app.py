@@ -63,6 +63,9 @@ user_friendly_feature_names = {
     # ... up to symptom_41
 }
 
+for i in range(1, 42):
+    user_friendly_feature_names[f'symptom_{i}'] = f'Symptom {i}'
+
 user_friendly_disease_names = {
     '4': ['Malaria', 'Denque'],
     '8': ['Malaria', 'Thyphoid Fever'],
@@ -117,7 +120,7 @@ with st.sidebar.form(key='sidebar_form'):
     selected_hc_name = st.selectbox('Health Centre', options=list(health_centre_options.keys()))
     user_inputs_sidebar['health_centre'] = health_centre_options[selected_hc_name]
     user_inputs_sidebar['age'] = st.slider('Age (years)', min_value=0, max_value=100, value=50)
-    user_inputs_sidebar['weight'] = st.slider('Weight (kg)', min_value=0.0, max_value=200.0, value=100.0, step=0.5)
+    user_inputs_sidebar['weight'] = st.slider('Weight (kg)', min_value=0, max_value=200, value=100, step=0.5)
     selected_gender_name = st.selectbox('Gender', options=list(gender_options.keys()))
     user_inputs_sidebar['gender'] = gender_options[selected_gender_name]
     submit_button_sidebar = st.form_submit_button(label='Update Patient Info')
