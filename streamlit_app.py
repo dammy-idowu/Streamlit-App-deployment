@@ -1,3 +1,4 @@
+# --- Import python libraries ---
 import streamlit as st
 import pandas as pd
 import joblib
@@ -9,10 +10,10 @@ try:
     best_model = joblib.load('best_model.pkl')
     le = joblib.load('label_encoder.pkl')
 except FileNotFoundError:
-    st.error("Model or LabelEncoder file not found. Please ensure 'best_model.pkl' and 'label_encoder.pkl' exist.")
+    st.error("Model or LabelEncoder file not found.")
     st.stop()
 
-# --- Define custom name mappings ---
+# --- Rename independent features (patient bio & symptoms) for user friendliness using Mapping---
 user_friendly_feature_names = {
     'health_centre': 'Health Centre',
     'age': 'Age (years)',
@@ -61,6 +62,7 @@ user_friendly_feature_names = {
     'shock': 'Shock'
 }
 
+# --- Rename label encoded target variable to actual disease names for Doctors understanding using Mapping ---
 user_friendly_disease_names = {
     '4': ['Malaria', 'Dengue'],
     '8': ['Malaria', 'Thyphoid Fever'],
@@ -77,12 +79,12 @@ user_friendly_disease_names = {
     '6': ['Malaria', 'Dengue', 'Typhoid Fever']
 }
 
-# --- Define specific widget options and mappings ---
+# --- Rename transformed independent features for better interpretation for Doctors using Mappings ---
 gender_options = {'Female': 0, 'Male': 1}
 health_centre_options = {'CMA de DO': 0, 'CMA de DAFRA': 1}
-boolean_options = {'False': 0, 'True': 1}
+boolean_options = {'False': 0, 'True': 1}        # Define boolean value interpretation of features 
 
-# --- Bootstrap function (corrected for single input) ---
+# --- Defining Bootstrap function to calculate Confidence Interval---
 def calculate_bootstrap_confidence_interval(model, input_data_dict, n_bootstraps=1000, confidence=0.95):
     input_df = pd.DataFrame([input_data_dict])
     predicted_probabilities = []
@@ -98,16 +100,16 @@ def calculate_bootstrap_confidence_interval(model, input_data_dict, n_bootstraps
         safe_proba = np.where(row_sums == 0, 0, proba / row_sums)
         predicted_probabilities.append(np.max(safe_proba, axis=1))
 
-    lower_bound = np.percentile(predicted_probabilities, (1 - confidence) / 2 * 100)
-    upper_bound = np.percentile(predicted_probabilities, (1 - (1 - confidence) / 2) * 100)
+    lower_bound = np.percentile(predicted_probabilities, (1 - confidence) / 2 * 100)          # define lower limit for Confidence Interval
+    upper_bound = np.percentile(predicted_probabilities, (1 - (1 - confidence) / 2) * 100)    # define upper limit for Confidence Interval
     
-    return lower_bound, upper_bound
+    return lower_bound, upper_bound                                                           # return both lower and upper values for Confidence Interval
 
 # --- Streamlit App Layout ---
 st.set_page_config(page_title="Custom Disease Prediction App")
-st.title('🤖 DocPal App')
-st.write('_Enter patient\'s symptoms to get a disease prediction_')
-st.info('***DocPal! Your disease diagnostic assistant*** :sparkles:')
+st.title('🤖 DocPal App')                                                                    # Streamlit St.title function, used to call App name
+st.write('_Enter patient\'s symptoms to get a disease prediction_')                          # Stramlit st.write function, used for documenting information about App
+st.info('***DocPal! Your disease diagnostic assistant*** :sparkles:')                        # Streamlit st.info function, used for documenting information about App
 
 # App use instruction
 with st.expander(' :rotating_light:  Instruction on how to use the DocPal app  '):
@@ -136,7 +138,7 @@ st.header('Patient Symptoms')
 with st.form(key='prediction_form'):
     user_inputs_main = user_inputs_sidebar.copy()
     
-    boolean_features = [
+    boolean_features = [                                                                      # Create a list out of all the independent features
         'high_temperature', 'fever_48hrs', 'fever_in_the_last_7days',
         'loss_of_weight', 'headache', 'nausea', 'vomiting', 'joint_pain',
         'joint_swelling', 'muscle_pain', 'chest_pain', 'back_pain',
@@ -152,12 +154,12 @@ with st.form(key='prediction_form'):
         'respiratory_distress', 'shock'
     ]
     
-    for feature in boolean_features:
+    for feature in boolean_features:                                                            # Create loop to iterate over features within boolean features list above
         display_name = user_friendly_feature_names[feature]
-        selected_bool = st.selectbox(display_name, options=list(boolean_options.keys()))
-        user_inputs_main[feature] = boolean_options[selected_bool]
+        selected_bool = st.selectbox(display_name, options=list(boolean_options.keys()))        # Streamlit st.selectbox function is assigned to each feature
+        user_inputs_main[feature] = boolean_options[selected_bool]                              # Assign boolean values to th features using the st.selectbox input mechanism
     
-    submit_button_main = st.form_submit_button(label='Get Prediction')
+    submit_button_main = st.form_submit_button(label='Get Prediction')                          # Streamlit button function to get prediction
     
 # --- Prediction and Output ---
 if submit_button_main:
@@ -172,10 +174,9 @@ if submit_button_main:
             st.subheader('Prediction Result')
 
             # Pass the dictionary directly to the bootstrap function
-            # The bootstrap function will handle DataFrame conversion internally
             lower, upper = calculate_bootstrap_confidence_interval(best_model, user_inputs_main)
             
-            # Now, perform the single prediction
+            # Perform single prediction
             probabilities = best_model.predict_proba(input_data)
             row_sums = probabilities.sum(axis=1, keepdims=True)
             safe_probabilities = np.where(row_sums == 0, 0, probabilities / row_sums)
@@ -184,7 +185,7 @@ if submit_button_main:
             predicted_class_index = np.argmax(safe_probabilities, axis=1)
             original_predicted_disease_label = str(predicted_class_index[0])
             
-            # Fixed mapping of predicted disease
+            # Mapping of predicted disease
             display_predicted_diseases = user_friendly_disease_names.get(
                 str(le.classes_[predicted_class_index[0]]), 
                 [f'Disease with label {le.classes_[predicted_class_index[0]]}']
@@ -195,7 +196,7 @@ if submit_button_main:
             
             st.write('**Predicted Probabilities:**')
             
-            # FIXED: Correctly map classes from LabelEncoder to dictionary keys
+            # Map classes from LabelEncoder to dictionary keys
             class_labels = [", ".join(user_friendly_disease_names.get(str(c), [str(c)])) for c in le.classes_]
             
             prob_df = pd.DataFrame(safe_probabilities, columns=class_labels).T
