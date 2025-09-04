@@ -62,7 +62,7 @@ user_friendly_feature_names = {
     'symptom_shock': 'Shock'  # ... up to symptom_41
 }
 
-for i in range(1, 41):
+for i in range(1, 42):
     user_friendly_feature_names[f'symptom_{i}'] = f'Symptom {i}'
 
 user_friendly_disease_names = {
@@ -131,7 +131,7 @@ with st.form(key='prediction_form'):
 
 
     # Use selectbox for the remaining 41 boolean features
-    boolean_features = [f'symptom_{i}' for i in range(1, 41)] # Placeholder for your 41 features
+    boolean_features = [f'symptom_{i}' for i in range(1, 42)] # Placeholder for your 41 features
     for feature in boolean_features:
         display_name = user_friendly_feature_names.get(feature, feature)
         selected_bool = st.selectbox(display_name, options=list(boolean_options.keys()))
