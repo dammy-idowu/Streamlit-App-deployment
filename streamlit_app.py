@@ -15,7 +15,7 @@ except FileNotFoundError:
 # --- Define custom name mappings ---
 user_friendly_feature_names = {
     'health_centre': 'Health Centre',
-    'gender_encoded': 'Gender',
+    'gender': 'Gender',
     'age': 'Age (years)',
     'weight': 'Weight (kg)',
     'high_temperature': 'High body temperature',
@@ -121,7 +121,7 @@ with st.sidebar.form(key='sidebar_form'):
 
     # Gender (selectbox)
     selected_gender_name = st.selectbox('Gender', options=list(gender_options.keys()))
-    user_inputs_sidebar['gender_encoded'] = gender_options[selected_gender_name]
+    user_inputs_sidebar['gender'] = gender_options[selected_gender_name]
     
     submit_button_sidebar = st.form_submit_button(label='Update Patient Info')
 
