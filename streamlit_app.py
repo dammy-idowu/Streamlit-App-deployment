@@ -15,7 +15,7 @@ except FileNotFoundError:
 # --- Define custom name mappings ---
 user_friendly_feature_names = {
     'health_centre': 'Health Centre',
-    'gender_encoded': 'Gender',
+    'gender': 'Gender',
     'age': 'Age (years)',
     'weight': 'Weight (kg)',
     # Add the remaining 41 boolean features here
@@ -119,7 +119,7 @@ with st.sidebar.form(key='sidebar_form'):
     user_inputs_sidebar['age'] = st.slider('Age (years)', min_value=0, max_value=100, value=50)
     user_inputs_sidebar['weight'] = st.slider('Weight (kg)', min_value=0.0, max_value=200.0, value=100.0, step=0.5)
     selected_gender_name = st.selectbox('Gender', options=list(gender_options.keys()))
-    user_inputs_sidebar['gender_encoded'] = gender_options[selected_gender_name]
+    user_inputs_sidebar['gender'] = gender_options[selected_gender_name]
     submit_button_sidebar = st.form_submit_button(label='Update Patient Info')
 
 # --- User input form for symptoms in the main area ---
