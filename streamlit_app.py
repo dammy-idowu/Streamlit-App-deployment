@@ -4,13 +4,33 @@ import joblib
 import numpy as np
 from scipy import stats
 
-# --- Load the saved objects ---
-try:
-    best_model = joblib.load('best_model.pkl')
-    le = joblib.load('label_encoder.pkl')
-except FileNotFoundError:
-    st.error("Model or LabelEncoder file not found. Please ensure 'best_model.pkl' and 'label_encoder.pkl' exist.")
-    st.stop()
+# --- Load the saved objects and data using caching ---
+@st.cache_resource
+def load_model_and_le():
+    try:
+        best_model = joblib.load('best_model.pkl')
+        le = joblib.load('label_encoder.pkl')
+        return best_model, le
+    except FileNotFoundError:
+        st.error("Model or LabelEncoder file not found.")
+        st.stop()
+        
+@st.cache_data
+def load_training_data():
+    try:
+        # --- Change made here: Use pd.read_pickle() instead of pd.read_csv() ---
+        X_train_df = pd.read_pickle('X_train.pkl')
+        # Also assume y_train is available, e.g., from a 'y_train.pkl'
+        # **IMPORTANT:** Replace this with your actual y_train data loading.
+        # This example assumes y_train was pickled as a Series.
+        y_train_series = joblib.load('y_train.pkl')
+        return X_train_df, y_train_series
+    except FileNotFoundError:
+        st.error("X_train.pkl or y_train.pkl not found. Please ensure they are in the same directory.")
+        st.stop()
+
+best_model, le = load_model_and_le()
+X_train_df, y_train_series = load_training_data()
 
 # --- Define custom name mappings ---
 user_friendly_feature_names = {
@@ -82,17 +102,27 @@ gender_options = {'Female': 0, 'Male': 1}
 health_centre_options = {'CMA de DO': 0, 'CMA de DAFRA': 1}
 boolean_options = {'False': 0, 'True': 1}
 
-# --- Bootstrap function (same as previous code) ---
-def calculate_bootstrap_confidence_interval(model, input_data, n_bootstraps=1000, confidence=0.95):
-    input_df = pd.DataFrame([input_data])
+# --- Bootstrap function (updated to use X_train) ---
+def calculate_bootstrap_confidence_interval(model, X_train, input_data, n_bootstraps=1000, confidence=0.95):
     predicted_probabilities = []
     
-    if len(input_df.columns) == 0:
+    # Check that input_data is a DataFrame with features
+    if len(input_data.columns) == 0:
         return 0, 0
 
+    # Resample from the training data
     for _ in range(n_bootstraps):
-        resampled_input = input_df.sample(n=len(input_df), replace=True)
-        proba = model.predict_proba(resampled_input)
+        resampled_indices = np.random.choice(X_train.index, size=len(X_train), replace=True)
+        resampled_X = X_train.iloc[resampled_indices]
+
+        # Fit a new model on the resampled data
+        # This is the most accurate approach for bootstrapping
+        resampled_y = y_train_series.iloc[resampled_indices]
+        temp_model = joblib.load('best_model.pkl') # Create a new instance
+        temp_model.fit(resampled_X, resampled_y)
+
+        # Predict probabilities on the user's input with the new model
+        proba = temp_model.predict_proba(input_data)
         
         row_sums = proba.sum(axis=1, keepdims=True)
         safe_proba = np.where(row_sums == 0, 0, proba / row_sums)
@@ -151,8 +181,11 @@ with st.form(key='prediction_form'):
 # --- Prediction and Output ---
 if submit_button_main:
     try:
-        # Create a DataFrame from the dictionary, ensuring it's 2D
         input_data = pd.DataFrame([user_inputs_main])
+        
+        # Ensure the order of columns matches the training data
+        input_data = input_data[X_train_df.columns]
+        
         input_data = input_data.apply(pd.to_numeric, errors='coerce')
         
         if input_data.isnull().values.any():
@@ -160,28 +193,12 @@ if submit_button_main:
         else:
             st.subheader('Prediction Result')
 
-            # Ensure the order of columns matches the training data
-            # This is a crucial step to prevent errors if the feature order differs.
-            # Assume 'X_train' was used to get the original column order.
-            # You might need to load this order from a file if not available.
-            # For this example, we assume `best_model`'s feature names are known.
-            # A more robust approach would save the column order.
-            
-            # Use `best_model.feature_names_in_` if available (sklearn 1.0+)
-            try:
-                model_features = list(best_model.feature_names_in_)
-            except AttributeError:
-                # Fallback if feature_names_in_ is not available
-                model_features = list(input_data.columns) # Assuming input order is correct
-            
-            input_data = input_data[model_features]
-
             probabilities = best_model.predict_proba(input_data)
             row_sums = probabilities.sum(axis=1, keepdims=True)
             safe_probabilities = np.where(row_sums == 0, 0, probabilities / row_sums)
             safe_probabilities = np.nan_to_num(safe_probabilities)
 
-            predicted_class_index = np.argmax(safe_probabilities, axis=1)[0]
+            predicted_class_index = np.argmax(safe_probabilities, axis=1)
             original_predicted_disease_label = str(predicted_class_index)
             
             display_predicted_diseases = user_friendly_disease_names.get(
@@ -191,7 +208,9 @@ if submit_button_main:
             
             st.success(f'Predicted Disease: **{", ".join(display_predicted_diseases)}**')
             
-            lower, upper = calculate_bootstrap_confidence_interval(best_model, input_data)
+            # --- Use X_train for the bootstrap confidence interval ---
+            lower, upper = calculate_bootstrap_confidence_interval(best_model, X_train_df, input_data)
+            
             st.info(f'**Confidence Interval:** ({lower:.2f}, {upper:.2f})')
             
             st.write('**Predicted Probabilities:**')
@@ -203,3 +222,4 @@ if submit_button_main:
         st.error(f"Prediction Error: {ve}. Please check your input values.")
     except Exception as e:
         st.error(f"An unexpected error occurred: {e}")
+
