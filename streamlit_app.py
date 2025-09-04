@@ -18,7 +18,6 @@ user_friendly_feature_names = {
     'age': 'Age (years)',
     'weight': 'Weight (kg)',
     'gender_encoded': 'Gender',
-    # --- The 41 boolean symptoms ---
     'high_temperature': 'High body temperature',
     'fever_48hrs': 'Had fever for more than 48 hours',
     'fever_in_the_last_7days': 'Had fever in the last 7 days',
@@ -62,8 +61,9 @@ user_friendly_feature_names = {
     'shock': 'Shock'
 }
 
+# --- NEW DISEASE MAPPING ---
 user_friendly_disease_names = {
-    '4': ['Malaria', 'Denque'],
+    '4': ['Malaria', 'Dengue'],
     '8': ['Malaria', 'Thyphoid Fever'],
     '3': ['Malaria'],
     '7': ['Malaria', 'Other diseases'],
@@ -77,6 +77,7 @@ user_friendly_disease_names = {
     '12': ['Other diseases'],
     '6': ['Malaria', 'Dengue', 'Typhoid Fever']
 }
+
 
 # --- Define specific widget options and mappings ---
 gender_options = {'Female': 0, 'Male': 1}
@@ -126,7 +127,6 @@ st.header('Patient Symptoms')
 with st.form(key='prediction_form'):
     user_inputs_main = user_inputs_sidebar.copy()
     
-    # Get a list of the 41 boolean feature names from the dictionary keys
     boolean_features = [
         'high_temperature', 'fever_48hrs', 'fever_in_the_last_7days',
         'loss_of_weight', 'headache', 'nausea', 'vomiting', 'joint_pain',
@@ -167,11 +167,11 @@ if submit_button_main:
             safe_probabilities = np.nan_to_num(safe_probabilities)
 
             predicted_class_index = np.argmax(safe_probabilities, axis=1)
-            original_predicted_disease = le.inverse_transform([predicted_class_index])[0]
+            original_predicted_disease_label = str(predicted_class_index[0])
             
             display_predicted_diseases = user_friendly_disease_names.get(
-                original_predicted_disease, 
-                [original_predicted_disease]
+                original_predicted_disease_label, 
+                [f'Disease with label {original_predicted_disease_label}']
             )
             
             st.success(f'Predicted Disease: **{", ".join(display_predicted_diseases)}**')
