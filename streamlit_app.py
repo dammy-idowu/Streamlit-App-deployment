@@ -82,9 +82,9 @@ gender_options = {'Female': 0, 'Male': 1}
 health_centre_options = {'CMA de DO': 0, 'CMA de DAFRA': 1}
 boolean_options = {'False': 0, 'True': 1}
 
-# --- Bootstrap function (same as previous code) ---
-def calculate_bootstrap_confidence_interval(model, input_data, n_bootstraps=1000, confidence=0.95):
-    input_df = pd.DataFrame([input_data])
+# --- Bootstrap function (corrected for single input) ---
+def calculate_bootstrap_confidence_interval(model, input_data_dict, n_bootstraps=1000, confidence=0.95):
+    input_df = pd.DataFrame([input_data_dict])
     predicted_probabilities = []
     
     if len(input_df.columns) == 0:
@@ -160,29 +160,18 @@ if submit_button_main:
         else:
             st.subheader('Prediction Result')
 
-            # Ensure the order of columns matches the training data
-            # This is a crucial step to prevent errors if the feature order differs.
-            # Assume 'X_train' was used to get the original column order.
-            # You might need to load this order from a file if not available.
-            # For this example, we assume `best_model`'s feature names are known.
-            # A more robust approach would save the column order.
+            # Pass the dictionary directly to the bootstrap function
+            # The bootstrap function will handle DataFrame conversion internally
+            lower, upper = calculate_bootstrap_confidence_interval(best_model, user_inputs_main)
             
-            # Use `best_model.feature_names_in_` if available (sklearn 1.0+)
-            try:
-                model_features = list(best_model.feature_names_in_)
-            except AttributeError:
-                # Fallback if feature_names_in_ is not available
-                model_features = list(input_data.columns) # Assuming input order is correct
-            
-            input_data = input_data[model_features]
-
+            # Now, perform the single prediction
             probabilities = best_model.predict_proba(input_data)
             row_sums = probabilities.sum(axis=1, keepdims=True)
             safe_probabilities = np.where(row_sums == 0, 0, probabilities / row_sums)
             safe_probabilities = np.nan_to_num(safe_probabilities)
 
-            predicted_class_index = np.argmax(safe_probabilities, axis=1)[0]
-            original_predicted_disease_label = str(predicted_class_index)
+            predicted_class_index = np.argmax(safe_probabilities, axis=1)
+            original_predicted_disease_label = str(predicted_class_index[0])
             
             display_predicted_diseases = user_friendly_disease_names.get(
                 original_predicted_disease_label, 
@@ -190,8 +179,6 @@ if submit_button_main:
             )
             
             st.success(f'Predicted Disease: **{", ".join(display_predicted_diseases)}**')
-            
-            lower, upper = calculate_bootstrap_confidence_interval(best_model, input_data)
             st.info(f'**Confidence Interval:** ({lower:.2f}, {upper:.2f})')
             
             st.write('**Predicted Probabilities:**')
