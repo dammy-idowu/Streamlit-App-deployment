@@ -59,7 +59,7 @@ user_friendly_feature_names = {
     'bitter_taste_in_your_throat': 'Bitter taste in your throat',
     'stiffness': 'Stiffness',
     'respiratory_distress': 'Respiratory distress',
-    'shock': 'Shock'
+    'shock': 'Shock',
     # ... up to symptom_41
 }
 
