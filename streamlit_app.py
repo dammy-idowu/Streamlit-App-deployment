@@ -2,76 +2,185 @@ import streamlit as st
 import pandas as pd
 import joblib
 import numpy as np
+from scipy import stats
 
 # --- Load the saved objects ---
 try:
     best_model = joblib.load('best_model.pkl')
     le = joblib.load('label_encoder.pkl')
-    # If you used a pipeline, load that instead of the raw model
-    # best_pipeline = joblib.load('best_pipeline.pkl')
 except FileNotFoundError:
-    st.error("Model or LabelEncoder file not found. Please ensure 'best_model.pkl' and 'label_encoder.pkl' exist in the directory.")
-    st.stop() # Stops the script if files are missing
+    st.error("Model or LabelEncoder file not found. Please ensure 'best_model.pkl' and 'label_encoder.pkl' exist.")
+    st.stop()
 
-# --- App Title and Description ---
+# --- Define custom name mappings ---
+user_friendly_feature_names = {
+    'health_centre': 'Health Centre',
+    'gender_encoded': 'Gender',
+    'age': 'Age (years)',
+    'weight': 'Weight (kg)',
+    'high_temperature': 'High body temperature',
+    'fever_48hrs': 'Had fever for more than 48 hours',
+    'fever_in_the_last_7days': 'Had fever in the last 7 days',
+    'loss_of_weight': 'Loss of weight',
+    'headache': 'Headache',
+    'nausea': 'Nausea',
+    'vomiting': 'Vomiting',
+    'joint_pain': 'Joint pain',
+    'joint_swelling': 'Joint swelling',
+    'muscle_pain': 'Muscle pain',
+    'chest_pain': 'Chest pain',
+    'back_pain': 'Back pain',
+    'loss_of_consciousness': 'Loss of consciousness',
+    'loss_of_appetite': 'Loss of appetite',
+    'skin_rash': 'Skin rash',
+    'morbilliform_rash': 'Morbilliform rash',
+    'bleeding': 'Bleeding',
+    'runny_nose': 'Runny nose',
+    'lethargy': 'Lethargy',
+    'dizzy': 'Dizzy',
+    'stomach_pain': 'Stomach pain',
+    'swelling_stomach': 'Swelling stomach',
+    'throat_pain': 'Throat pain',
+    'cough': 'Cough',
+    'diarrhoea': 'Diarrhoea',
+    'retro_orbital_pain': 'Retro-orbital pain',
+    'shiver_cold_sensation': 'Cold shivering sensation',
+    'frequent_urination': 'Frequent urination',
+    'Constipation': 'Constipation',
+    'bleeding_nose': 'Bleeding nose',
+    'focal_convulsion': 'Focal convulsion',
+    'multiple_convulsions': 'Multiple convulsion',
+    'impaired_level_of_consciousness': 'Impaired level of consciousness',
+    'facial_flushing': 'Facial flushing',
+    'facial_swelling': 'Facial swelling',
+    'profuse_sweating': 'Profuse sweating',
+    'irrational_talking': 'Irrational talking',
+    'bitter_taste_in_your_throat': 'Bitter taste in your throat',
+    'stiffness': 'Stiffness',
+    'respiratory_distress': 'Respiratory distress',
+    'shock': 'Shock'
+}
+
+user_friendly_disease_names = {
+    '4': ['Malaria', 'Denque'],
+    '8': ['Malaria', 'Thyphoid Fever'],
+    '3': ['Malaria'],
+    '7': ['Malaria', 'Other diseases'],
+    '10': ['Malaria', 'Yellow fever'],
+    '2': ['Dengue', 'Yellow fever'],
+    '0': ['Dengue', 'Other diseases'],
+    '5': ['Malaria', 'Dengue', 'Other diseases'],
+    '11': ['Malaria', 'Yellow fever', 'Other diseases'],
+    '9': ['Malaria', 'Thyphoid fever', 'Other diseases'],
+    '1': ['Dengue', 'Thyphoid fever'],
+    '12': ['Other diseases'],
+    '6': ['Malaria', 'Dengue', 'Typhoid Fever']
+}
+
+# --- Define specific widget options and mappings ---
+gender_options = {'Female': 0, 'Male': 1}
+health_centre_options = {'CMA de DO': 0, 'CMA de DAFRA': 1} # Assuming your model uses these encodings
+
+# --- Bootstrap function for confidence interval (from previous answer) ---
+def calculate_bootstrap_confidence_interval(model, input_data, n_bootstraps=1000, confidence=0.95):
+    input_df = pd.DataFrame([input_data])
+    predicted_probabilities = []
+    
+    if len(input_df.columns) == 0:
+        return 0, 0
+
+    for _ in range(n_bootstraps):
+        resampled_input = input_df.sample(n=len(input_df), replace=True)
+        proba = model.predict_proba(resampled_input)
+        
+        row_sums = proba.sum(axis=1, keepdims=True)
+        safe_proba = np.where(row_sums == 0, 0, proba / row_sums)
+        predicted_probabilities.append(np.max(safe_proba, axis=1))
+
+    lower_bound = np.percentile(predicted_probabilities, (1 - confidence) / 2 * 100)
+    upper_bound = np.percentile(predicted_probabilities, (1 - (1 - confidence) / 2) * 100)
+    
+    return lower_bound, upper_bound
+
+# --- Streamlit App Layout ---
+st.set_page_config(page_title="Custom Disease Prediction App")
 st.title('Disease Prediction App')
 st.write('Enter the patient\'s symptoms to get a disease prediction.')
 
-# --- Get feature names for user input ---
-# NOTE: Replace this with your actual independent feature names.
-# This is a placeholder for demonstration.
-feature_names = ['health_centre', 'gender', 'age', 'weight', 'high_temperature', 'fever_48hrs', 'fever_in_the_last_7days', 'loss_of_weight', 'headache', 'nausea', 'vomiting', 'joint_pain', 'joint_swelling', 'muscle_pain', 'chest_pain', 'back_pain', 'loss_of_consciousness', 'loss_of_appetite', 'skin_rash', 'morbilliform_rash', 'bleeding', 'runny_nose', 'lethargy', 'dizzy', 'stomach_pain', 'swelling_stomach', 'throat_pain', 'cough', 'diarrhoea', 'retro_orbital_pain', 'shiver_cold_sensation', 'frequent_urination', 'Constipation', 'bleeding_nose', 'focal_convulsion', 'multiple_convulsions', 'impaired_level_of_consciousness', 'facial_flushing', 'facial_swelling', 'profuse_sweating', 'irrational_talking', 'bitter_taste_in_your_throat', 'stiffness', 'respiratory_distress', 'shock']
+# --- Create the sidebar for basic patient info ---
+st.sidebar.header('Basic Patient Information')
+with st.sidebar.form(key='sidebar_form'):
+    # Health Centre (selectbox)
+    selected_hc_name = st.selectbox('Health Centre', options=list(health_centre_options.keys()))
+    user_inputs_sidebar = {}
+    user_inputs_sidebar['health_centre'] = health_centre_options[selected_hc_name]
 
-# --- User input form ---
-st.header('Patient Information')
+    # Age and Weight (sliders)
+    user_inputs_sidebar['age'] = st.slider('Age (years)', min_value=0, max_value=100, value=25)
+    user_inputs_sidebar['weight'] = st.slider('Weight (kg)', min_value=10.0, max_value=200.0, value=70.0, step=0.5)
+
+    # Gender (selectbox)
+    selected_gender_name = st.selectbox('Gender', options=list(gender_options.keys()))
+    user_inputs_sidebar['gender_encoded'] = gender_options[selected_gender_name]
+    
+    submit_button_sidebar = st.form_submit_button(label='Update Patient Info')
+
+# --- User input form for symptoms in the main area ---
+st.header('Patient Symptoms')
 with st.form(key='prediction_form'):
-    # Use different Streamlit widgets for different types of features.
-    # The following are examples; adapt them to your specific features.
-    user_inputs = {}
-    for feature in feature_names:
-        user_inputs[feature] = st.text_input(f'Enter value for {feature}', value='0.0')
-
-    submit_button = st.form_submit_button(label='Get Prediction')
+    # Initialize user_inputs with sidebar values
+    user_inputs_main = user_inputs_sidebar.copy()
+    
+    # Use checkboxes for the remaining 41 features
+    # You will need to replace 'symptom_1' etc. with your actual feature names.
+    boolean_features_start_index = 4
+    for i in range(boolean_features_start_index, 45): # Assuming a total of 47 features
+        original_feature = f'feature_{i}'
+        display_name = user_friendly_feature_names.get(original_feature, f'Symptom {i-5}')
+        user_inputs_main[original_feature] = st.checkbox(display_name)
+    
+    submit_button_main = st.form_submit_button(label='Get Prediction')
 
 # --- Prediction and Output ---
-if submit_button:
+if submit_button_main:
     try:
-        # Convert user input to a DataFrame
-        input_data = pd.DataFrame([user_inputs])
-
-        # Convert the input data to numeric types (if they are not already)
+        # Convert boolean inputs to integers (True -> 1, False -> 0)
+        for key, value in user_inputs_main.items():
+            if isinstance(value, bool):
+                user_inputs_main[key] = int(value)
+        
+        input_data = pd.DataFrame([user_inputs_main])
         input_data = input_data.apply(pd.to_numeric, errors='coerce')
         
-        # Check for NaN values after conversion
         if input_data.isnull().values.any():
-            st.warning("Invalid input detected. Please ensure all values are numeric.")
+            st.warning("Invalid input detected. Please ensure all values are valid.")
         else:
             st.subheader('Prediction Result')
 
-            # Get the predicted probabilities
             probabilities = best_model.predict_proba(input_data)
             
-            # Use np.where to handle the normalization safely
             row_sums = probabilities.sum(axis=1, keepdims=True)
             safe_probabilities = np.where(row_sums == 0, 0, probabilities / row_sums)
             safe_probabilities = np.nan_to_num(safe_probabilities)
 
-            # Get the predicted class index
             predicted_class_index = np.argmax(safe_probabilities, axis=1)
-            
-            # Inverse transform to get the disease name
-            predicted_disease = le.inverse_transform(predicted_class_index)[0]
+            original_predicted_disease = le.inverse_transform([predicted_class_index])
+            display_predicted_disease = user_friendly_disease_names.get(
+                original_predicted_disease, 
+                original_predicted_disease
+            )
 
-            # Display the result
-            st.success(f'Predicted Disease: **{predicted_disease}**')
+            lower, upper = calculate_bootstrap_confidence_interval(best_model, input_data)
             
-            # Display probabilities
+            st.success(f'Predicted Disease: **{display_predicted_disease[0]}**')
+            st.info(f'**Confidence Interval:** ({lower:.2f}, {upper:.2f})')
+            
             st.write('**Predicted Probabilities:**')
-            prob_df = pd.DataFrame(safe_probabilities, columns=le.classes_)
-            st.bar_chart(prob_df.T)
+            prob_df = pd.DataFrame(safe_probabilities, columns=le.classes_).T
+            prob_df.index = prob_df.index.map(lambda c: user_friendly_disease_names.get(c, c))
+            st.bar_chart(prob_df)
 
     except ValueError as ve:
         st.error(f"Prediction Error: {ve}. Please check your input values.")
     except Exception as e:
         st.error(f"An unexpected error occurred: {e}")
-
