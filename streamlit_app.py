@@ -62,19 +62,19 @@ user_friendly_feature_names = {
 }
 
 user_friendly_disease_names = {
-    '4': ['Malaria', 'Denque'],
-    '8': ['Malaria', 'Thyphoid Fever'],
-    '3': ['Malaria'],
-    '7': ['Malaria', 'Other diseases'],
-    '10': ['Malaria', 'Yellow fever'],
-    '2': ['Dengue', 'Yellow fever'],
-    '0': ['Dengue', 'Other diseases'],
-    '5': ['Malaria', 'Dengue', 'Other diseases'],
-    '11': ['Malaria', 'Yellow fever', 'Other diseases'],
-    '9': ['Malaria', 'Thyphoid fever', 'Other diseases'],
-    '1': ['Dengue', 'Thyphoid fever'],
-    '12': ['Other diseases'],
-    '6': ['Malaria', 'Dengue', 'Typhoid Fever']
+    '4': 'Malaria (Denque)',
+    '8': 'Malaria (Thyphoid Fever)',
+    '3': 'Malaria',
+    '7': 'Malaria (Other diseases)',
+    '10': 'Malaria (Yellow fever)',
+    '2': 'Dengue (Yellow fever)',
+    '0': 'Dengue (Other diseases)',
+    '5': 'Malaria (Dengue, Other diseases)',
+    '11': 'Malaria, Yellow fever, Other diseases)',
+    '9': 'Malaria, Thyphoid fever, Other diseases',
+    '1': 'Dengue, Thyphoid fever',
+    '12': 'Other diseases',
+    '6': 'Malaria, Dengue, Typhoid Fever'
 }
 
 # --- Define specific widget options and mappings ---
