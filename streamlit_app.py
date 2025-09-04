@@ -108,6 +108,18 @@ st.set_page_config(page_title="Custom Disease Prediction App")
 st.title('Disease Prediction App')
 st.write('Enter the patient\'s symptoms to get a disease prediction.')
 
+st.info('Your disease diagnnostic assistant :smile:')
+
+# App use instruction
+with st.expander(' :rotating_light: **Instruction on how to use the DocPal app**'):
+    st.write(':one: Click on the sidebar icon at the top left corner of your screen :iphone: ')
+    st.write(':two: Insert patient information')
+    st.write(':three: Click update')
+    st.write(':four: Move to center screen to select specific symptoms based on patient feedback')
+    st.write(':five: Click on Get Prediction')
+    st.write(':six: Thank you for trying this app :grin: ')
+
+
 # --- Create the sidebar for basic patient info ---
 st.sidebar.header('Basic Patient Information')
 with st.sidebar.form(key='sidebar_form'):
