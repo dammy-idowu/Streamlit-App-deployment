@@ -108,6 +108,7 @@ def calculate_bootstrap_confidence_interval(model, input_data, n_bootstraps=1000
 # --- Streamlit App Layout ---
 st.set_page_config(page_title="Custom Disease Prediction App")
 st.title('Disease Prediction App')
+st.info('Your disease diagnostic assistant')
 st.write('Enter the patient\'s symptoms to get a disease prediction.')
 
 # --- Create the sidebar for basic patient info ---
