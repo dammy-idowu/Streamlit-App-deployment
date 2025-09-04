@@ -15,9 +15,9 @@ except FileNotFoundError:
 # --- Define custom name mappings ---
 user_friendly_feature_names = {
     'health_centre': 'Health Centre',
+    'gender': 'Gender',
     'age': 'Age (years)',
     'weight': 'Weight (kg)',
-    'gender_encoded': 'Gender',
     'high_temperature': 'High body temperature',
     'fever_48hrs': 'Had fever for more than 48 hours',
     'fever_in_the_last_7days': 'Had fever in the last 7 days',
@@ -120,7 +120,7 @@ with st.sidebar.form(key='sidebar_form'):
     user_inputs_sidebar['age'] = st.slider('Age (years)', min_value=0, max_value=120, value=30)
     user_inputs_sidebar['weight'] = st.slider('Weight (kg)', min_value=10.0, max_value=200.0, value=70.0, step=0.5)
     selected_gender_name = st.selectbox('Gender', options=list(gender_options.keys()))
-    user_inputs_sidebar['gender_encoded'] = gender_options[selected_gender_name]
+    user_inputs_sidebar['gender'] = gender_options[selected_gender_name]
     submit_button_sidebar = st.form_submit_button(label='Update Patient Info')
 
 # --- User input form for symptoms in the main area ---
