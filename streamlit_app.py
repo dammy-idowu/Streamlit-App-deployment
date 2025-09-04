@@ -128,7 +128,7 @@ with st.form(key='prediction_form'):
     user_inputs_main = user_inputs_sidebar.copy()
     
     # Use selectbox for the remaining 41 boolean features
-    boolean_features = [f'symptom_{i}' for i in range(1, 41)] # Placeholder for your 41 features
+    boolean_features = [f'symptom_{i}' for i in range(1, 40)] # Placeholder for your 41 features
     for feature in boolean_features:
         display_name = user_friendly_feature_names.get(feature, feature)
         selected_bool = st.selectbox(display_name, options=list(boolean_options.keys()))
