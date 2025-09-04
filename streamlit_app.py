@@ -15,9 +15,10 @@ except FileNotFoundError:
 # --- Define custom name mappings ---
 user_friendly_feature_names = {
     'health_centre': 'Health Centre',
-    'gender': 'Gender',
+    'gender_encoded': 'Gender',
     'age': 'Age (years)',
     'weight': 'Weight (kg)',
+    # Add the remaining 41 boolean features here
     'high_temperature': 'High body temperature',
     'fever_48hrs': 'Had fever for more than 48 hours',
     'fever_in_the_last_7days': 'Had fever in the last 7 days',
@@ -59,29 +60,31 @@ user_friendly_feature_names = {
     'stiffness': 'Stiffness',
     'respiratory_distress': 'Respiratory distress',
     'shock': 'Shock'
+    # ... up to symptom_41
 }
 
 user_friendly_disease_names = {
-    '4': 'Malaria (Denque)',
-    '8': 'Malaria (Thyphoid Fever)',
-    '3': 'Malaria',
-    '7': 'Malaria (Other diseases)',
-    '10': 'Malaria (Yellow fever)',
-    '2': 'Dengue (Yellow fever)',
-    '0': 'Dengue (Other diseases)',
-    '5': 'Malaria (Dengue, Other diseases)',
-    '11': 'Malaria, Yellow fever, Other diseases)',
-    '9': 'Malaria, Thyphoid fever, Other diseases',
-    '1': 'Dengue, Thyphoid fever',
-    '12': 'Other diseases',
-    '6': 'Malaria, Dengue, Typhoid Fever'
+    '4': ['Malaria', 'Denque'],
+    '8': ['Malaria', 'Thyphoid Fever'],
+    '3': ['Malaria'],
+    '7': ['Malaria', 'Other diseases'],
+    '10': ['Malaria', 'Yellow fever'],
+    '2': ['Dengue', 'Yellow fever'],
+    '0': ['Dengue', 'Other diseases'],
+    '5': ['Malaria', 'Dengue', 'Other diseases'],
+    '11': ['Malaria', 'Yellow fever', 'Other diseases'],
+    '9': ['Malaria', 'Thyphoid fever', 'Other diseases'],
+    '1': ['Dengue', 'Thyphoid fever'],
+    '12': ['Other diseases'],
+    '6': ['Malaria', 'Dengue', 'Typhoid Fever']
 }
 
 # --- Define specific widget options and mappings ---
 gender_options = {'Female': 0, 'Male': 1}
-health_centre_options = {'CMA de DO': 0, 'CMA de DAFRA': 1} # Assuming your model uses these encodings
+health_centre_options = {'CMA de DO': 0, 'CMA de DAFRA': 1}
+boolean_options = {'False': 0, 'True': 1} # Mapping for boolean selectboxes
 
-# --- Bootstrap function for confidence interval (from previous answer) ---
+# --- Bootstrap function (same as previous code) ---
 def calculate_bootstrap_confidence_interval(model, input_data, n_bootstraps=1000, confidence=0.95):
     input_df = pd.DataFrame([input_data])
     predicted_probabilities = []
@@ -110,45 +113,32 @@ st.write('Enter the patient\'s symptoms to get a disease prediction.')
 # --- Create the sidebar for basic patient info ---
 st.sidebar.header('Basic Patient Information')
 with st.sidebar.form(key='sidebar_form'):
-    # Health Centre (selectbox)
-    selected_hc_name = st.selectbox('Health Centre', options=list(health_centre_options.keys()))
     user_inputs_sidebar = {}
+    selected_hc_name = st.selectbox('Health Centre', options=list(health_centre_options.keys()))
     user_inputs_sidebar['health_centre'] = health_centre_options[selected_hc_name]
-
-    # Age and Weight (sliders)
-    user_inputs_sidebar['age'] = st.slider('Age (years)', min_value=0, max_value=100, value=25)
-    user_inputs_sidebar['weight'] = st.slider('Weight (kg)', min_value=10.0, max_value=200.0, value=70.0, step=0.5)
-
-    # Gender (selectbox)
+    user_inputs_sidebar['age'] = st.slider('Age (years)', min_value=0, max_value=100, value=50)
+    user_inputs_sidebar['weight'] = st.slider('Weight (kg)', min_value=0.0, max_value=200.0, value=100.0, step=0.5)
     selected_gender_name = st.selectbox('Gender', options=list(gender_options.keys()))
-    user_inputs_sidebar['gender'] = gender_options[selected_gender_name]
-    
+    user_inputs_sidebar['gender_encoded'] = gender_options[selected_gender_name]
     submit_button_sidebar = st.form_submit_button(label='Update Patient Info')
 
 # --- User input form for symptoms in the main area ---
 st.header('Patient Symptoms')
 with st.form(key='prediction_form'):
-    # Initialize user_inputs with sidebar values
     user_inputs_main = user_inputs_sidebar.copy()
     
-    # Use checkboxes for the remaining 41 features
-    # You will need to replace 'symptom_1' etc. with your actual feature names.
-    boolean_features_start_index = 4
-    for i in range(boolean_features_start_index, 45): # Assuming a total of 47 features
-        original_feature = f'feature_{i}'
-        display_name = user_friendly_feature_names.get(original_feature, f'Symptom {i-5}')
-        user_inputs_main[original_feature] = st.checkbox(display_name)
+    # Use selectbox for the remaining 41 boolean features
+    boolean_features = [f'symptom_{i}' for i in range(1, 42)] # Placeholder for your 41 features
+    for feature in boolean_features:
+        display_name = user_friendly_feature_names.get(feature, feature)
+        selected_bool = st.selectbox(display_name, options=list(boolean_options.keys()))
+        user_inputs_main[feature] = boolean_options[selected_bool]
     
     submit_button_main = st.form_submit_button(label='Get Prediction')
 
 # --- Prediction and Output ---
 if submit_button_main:
     try:
-        # Convert boolean inputs to integers (True -> 1, False -> 0)
-        for key, value in user_inputs_main.items():
-            if isinstance(value, bool):
-                user_inputs_main[key] = int(value)
-        
         input_data = pd.DataFrame([user_inputs_main])
         input_data = input_data.apply(pd.to_numeric, errors='coerce')
         
@@ -158,26 +148,26 @@ if submit_button_main:
             st.subheader('Prediction Result')
 
             probabilities = best_model.predict_proba(input_data)
-            
             row_sums = probabilities.sum(axis=1, keepdims=True)
             safe_probabilities = np.where(row_sums == 0, 0, probabilities / row_sums)
             safe_probabilities = np.nan_to_num(safe_probabilities)
 
             predicted_class_index = np.argmax(safe_probabilities, axis=1)
-            original_predicted_disease = le.inverse_transform([predicted_class_index])
-            display_predicted_disease = user_friendly_disease_names.get(
-                original_predicted_disease, 
-                original_predicted_disease
-            )
-
-            lower, upper = calculate_bootstrap_confidence_interval(best_model, input_data)
+            original_predicted_disease = le.inverse_transform([predicted_class_index])[0]
             
-            st.success(f'Predicted Disease: **{display_predicted_disease[0]}**')
+            display_predicted_diseases = user_friendly_disease_names.get(
+                original_predicted_disease, 
+                [original_predicted_disease]
+            )
+            
+            st.success(f'Predicted Disease: **{", ".join(display_predicted_diseases)}**')
+            
+            lower, upper = calculate_bootstrap_confidence_interval(best_model, input_data)
             st.info(f'**Confidence Interval:** ({lower:.2f}, {upper:.2f})')
             
             st.write('**Predicted Probabilities:**')
             prob_df = pd.DataFrame(safe_probabilities, columns=le.classes_).T
-            prob_df.index = prob_df.index.map(lambda c: user_friendly_disease_names.get(c, c))
+            prob_df.index = prob_df.index.map(lambda c: ", ".join(user_friendly_disease_names.get(c, [c])))
             st.bar_chart(prob_df)
 
     except ValueError as ve:
