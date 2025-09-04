@@ -105,19 +105,18 @@ def calculate_bootstrap_confidence_interval(model, input_data_dict, n_bootstraps
 
 # --- Streamlit App Layout ---
 st.set_page_config(page_title="Custom Disease Prediction App")
-st.title('Disease Prediction App')
-st.write('Enter the patient\'s symptoms to get a disease prediction.')
-
+st.title('DocPal App')
 st.info('Your disease diagnnostic assistant :smile:')
+st.write('Enter the patient\'s symptoms to get a disease prediction.')
 
 # App use instruction
 with st.expander(' :rotating_light: **Instruction on how to use the DocPal app**'):
-    st.write(':one: Click on the sidebar icon at the top left corner of your screen :iphone: ')
-    st.write(':two: Insert patient information')
-    st.write(':three: Click update')
+    st.write(':one: Click on the sidebar icon at the top left corner of your screen')
+    st.write(':two: Insert basic patient information')
+    st.write(':three: Click Update Patient info')
     st.write(':four: Move to center screen to select specific symptoms based on patient feedback')
     st.write(':five: Click on Get Prediction')
-    st.write(':six: Thank you for trying this app :grin: ')
+    st.write(':six: Thank you for using this app :grin: ')
 
 
 # --- Create the sidebar for basic patient info ---
@@ -158,7 +157,38 @@ with st.form(key='prediction_form'):
         selected_bool = st.selectbox(display_name, options=list(boolean_options.keys()))
         user_inputs_main[feature] = boolean_options[selected_bool]
     
-    submit_button_main = st.form_submit_button(label='Get Prediction')
+    # Custom CSS for the primary button with an icon
+    st.markdown("""
+    <style>
+    .stButton>button {
+        background-color: #007bff;
+        color: white;
+    }
+    .stButton>button:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    with st.form("prediction_form"):
+        st.write("Click below to get your prediction")
+        
+        # Use the icon parameter to add an emoji or a Material Symbol
+        # Use the 'primary' type for a distinct color
+        submit_button_main = st.form_submit_button(
+            label='Get Prediction',
+            type="primary",
+            icon="🔮" # Use an emoji or :material/icon_name:
+        )
+    
+    if submit_button_main:
+        # Use a spinner to show the user that the app is "working"
+        with st.spinner('Calculating prediction...'):
+            time.sleep(3)  # Simulate a prediction being made
+        
+        # st.success('Prediction successful!', icon="✅")
+        # st.write("Your prediction is: **High confidence**")
 
 # --- Prediction and Output ---
 if submit_button_main:
