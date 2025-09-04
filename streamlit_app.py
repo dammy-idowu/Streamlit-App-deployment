@@ -63,8 +63,10 @@ user_friendly_feature_names = {
     # ... up to symptom_41
 }
 
+
 for i in range(1, 42):
-    f'Symptom {i}' = user_friendly_feature_names[f'symptom_{i}']
+    user_friendly_feature_names[f'symptom_{i}'] = f'Symptom {i}'
+
 
 user_friendly_disease_names = {
     '4': ['Malaria', 'Denque'],
@@ -129,7 +131,10 @@ with st.sidebar.form(key='sidebar_form'):
 st.header('Patient Symptoms')
 with st.form(key='prediction_form'):
     user_inputs_main = user_inputs_sidebar.copy()
-    
+
+    # for i in range(1, 42):
+    # user_friendly_feature_names[f'symptom_{i}'] = f'Symptom {i}'
+
     # Use selectbox for the remaining 41 boolean features
     boolean_features = [f'symptom_{i}' for i in range(1, 40)] # Placeholder for your 41 features
     for feature in boolean_features:
