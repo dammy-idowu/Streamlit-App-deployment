@@ -110,7 +110,7 @@ st.write('_Enter patient\'s symptoms to get a disease prediction_')
 st.info('***DocPal! Your disease diagnostic assistant*** :sparkles:')
 
 # App use instruction
-with st.expander(' :rotating_light:  ****Instruction on how to use the DocPal app****  '):
+with st.expander(' :rotating_light:  Instruction on how to use the DocPal app  '):
     st.write(':one: Click on the sidebar icon at the top left corner of your screen')
     st.write(':two: Insert basic patient information')
     st.write(':three: Click Update Patient info')
