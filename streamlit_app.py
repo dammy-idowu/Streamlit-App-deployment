@@ -173,20 +173,24 @@ if submit_button_main:
             predicted_class_index = np.argmax(safe_probabilities, axis=1)
             original_predicted_disease_label = str(predicted_class_index[0])
             
+            # Fixed mapping of predicted disease
             display_predicted_diseases = user_friendly_disease_names.get(
-                original_predicted_disease_label, 
-                [f'Disease with label {original_predicted_disease_label}']
+                str(le.classes_[predicted_class_index[0]]), 
+                [f'Disease with label {le.classes_[predicted_class_index[0]]}']
             )
             
             st.success(f'Predicted Disease: **{", ".join(display_predicted_diseases)}**')
             st.info(f'**Confidence Interval:** ({lower:.2f}, {upper:.2f})')
             
             st.write('**Predicted Probabilities:**')
-            prob_df = pd.DataFrame(safe_probabilities, columns=le.classes_).T
-            prob_df.index = prob_df.index.map(lambda c: ", ".join(user_friendly_disease_names.get(c, [c])))
+            
+            # FIXED: Correctly map classes from LabelEncoder to dictionary keys
+            class_labels = [", ".join(user_friendly_disease_names.get(str(c), [str(c)])) for c in le.classes_]
+            
+            prob_df = pd.DataFrame(safe_probabilities, columns=class_labels).T
+            prob_df.columns = ['Probability']
             st.bar_chart(prob_df)
 
-    except ValueError as ve:
-        st.error(f"Prediction Error: {ve}. Please check your input values.")
     except Exception as e:
-        st.error(f"An unexpected error occurred: {e}")
+        st.error(f"An error occurred: {e}")
+
