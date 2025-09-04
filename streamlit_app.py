@@ -15,55 +15,52 @@ except FileNotFoundError:
 # --- Define custom name mappings ---
 user_friendly_feature_names = {
     'health_centre': 'Health Centre',
-    'gender_encoded': 'Gender',
     'age': 'Age (years)',
     'weight': 'Weight (kg)',
-    # Add the remaining 41 boolean features here
-    'symptom_high_temperature': 'High body temperature',
-    'symptom_fever_48hrs': 'Had fever for more than 48 hours',
-    'symptom_fever_in_the_last_7days': 'Had fever in the last 7 days',
-    'symptom_loss_of_weight': 'Loss of weight',
-    'symptom_headache': 'Headache',
-    'symptom_nausea': 'Nausea',
-    'symptom_vomiting': 'Vomiting',
-    'symptom_joint_pain': 'Joint pain',
-    'symptom_joint_swelling': 'Joint swelling',
-    'symptom_muscle_pain': 'Muscle pain',
-    'symptom_chest_pain': 'Chest pain',
-    'symptom_back_pain': 'Back pain',
-    'symptom_loss_of_consciousness': 'Loss of consciousness',
-    'symptom_loss_of_appetite': 'Loss of appetite',
-    'symptom_skin_rash': 'Skin rash',
-    'symptom_morbilliform_rash': 'Morbilliform rash',
-    'symptom_bleeding': 'Bleeding',
-    'symptom_runny_nose': 'Runny nose',
-    'symptom_lethargy': 'Lethargy',
-    'symptom_dizzy': 'Dizzy',
-    'symptom_stomach_pain': 'Stomach pain',
-    'symptom_swelling_stomach': 'Swelling stomach',
-    'symptom_throat_pain': 'Throat pain',
-    'symptom_cough': 'Cough',
-    'symptom_diarrhoea': 'Diarrhoea',
-    'symptom_retro_orbital_pain': 'Retro-orbital pain',
-    'symptom_shiver_cold_sensation': 'Cold shivering sensation',
-    'symptom_frequent_urination': 'Frequent urination',
-    'symptom_Constipation': 'Constipation',
-    'symptom_bleeding_nose': 'Bleeding nose',
-    'symptom_focal_convulsion': 'Focal convulsion',
-    'symptom_multiple_convulsions': 'Multiple convulsion',
-    'symptom_impaired_level_of_consciousness': 'Impaired level of consciousness',
-    'symptom_facial_flushing': 'Facial flushing',
-    'symptom_facial_swelling': 'Facial swelling',
-    'symptom_profuse_sweating': 'Profuse sweating',
-    'symptom_irrational_talking': 'Irrational talking',
-    'symptom_bitter_taste_in_your_throat': 'Bitter taste in your throat',
-    'symptom_stiffness': 'Stiffness',
-    'symptom_respiratory_distress': 'Respiratory distress',
-    'symptom_shock': 'Shock'  # ... up to symptom_41
+    'gender_encoded': 'Gender',
+    # --- The 41 boolean symptoms ---
+    'high_temperature': 'High body temperature',
+    'fever_48hrs': 'Had fever for more than 48 hours',
+    'fever_in_the_last_7days': 'Had fever in the last 7 days',
+    'loss_of_weight': 'Loss of weight',
+    'headache': 'Headache',
+    'nausea': 'Nausea',
+    'vomiting': 'Vomiting',
+    'joint_pain': 'Joint pain',
+    'joint_swelling': 'Joint swelling',
+    'muscle_pain': 'Muscle pain',
+    'chest_pain': 'Chest pain',
+    'back_pain': 'Back pain',
+    'loss_of_consciousness': 'Loss of consciousness',
+    'loss_of_appetite': 'Loss of appetite',
+    'skin_rash': 'Skin rash',
+    'morbilliform_rash': 'Morbilliform rash',
+    'bleeding': 'Bleeding',
+    'runny_nose': 'Runny nose',
+    'lethargy': 'Lethargy',
+    'dizzy': 'Dizzy',
+    'stomach_pain': 'Stomach pain',
+    'swelling_stomach': 'Swelling stomach',
+    'throat_pain': 'Throat pain',
+    'cough': 'Cough',
+    'diarrhoea': 'Diarrhoea',
+    'retro_orbital_pain': 'Retro-orbital pain',
+    'shiver_cold_sensation': 'Cold shivering sensation',
+    'frequent_urination': 'Frequent urination',
+    'Constipation': 'Constipation',
+    'bleeding_nose': 'Bleeding nose',
+    'focal_convulsion': 'Focal convulsion',
+    'multiple_convulsions': 'Multiple convulsion',
+    'impaired_level_of_consciousness': 'Impaired level of consciousness',
+    'facial_flushing': 'Facial flushing',
+    'facial_swelling': 'Facial swelling',
+    'profuse_sweating': 'Profuse sweating',
+    'irrational_talking': 'Irrational talking',
+    'bitter_taste_in_your_throat': 'Bitter taste in your throat',
+    'stiffness': 'Stiffness',
+    'respiratory_distress': 'Respiratory distress',
+    'shock': 'Shock'
 }
-
-for i in range(1, 42):
-    user_friendly_feature_names[f'symptom_{i}'] = f'Symptom {i}'
 
 user_friendly_disease_names = {
     '4': ['Malaria', 'Denque'],
@@ -84,7 +81,7 @@ user_friendly_disease_names = {
 # --- Define specific widget options and mappings ---
 gender_options = {'Female': 0, 'Male': 1}
 health_centre_options = {'CMA de DO': 0, 'CMA de DAFRA': 1}
-boolean_options = {'False': 0, 'True': 1} # Mapping for boolean selectboxes
+boolean_options = {'False': 0, 'True': 1}
 
 # --- Bootstrap function (same as previous code) ---
 def calculate_bootstrap_confidence_interval(model, input_data, n_bootstraps=1000, confidence=0.95):
@@ -118,8 +115,8 @@ with st.sidebar.form(key='sidebar_form'):
     user_inputs_sidebar = {}
     selected_hc_name = st.selectbox('Health Centre', options=list(health_centre_options.keys()))
     user_inputs_sidebar['health_centre'] = health_centre_options[selected_hc_name]
-    user_inputs_sidebar['age'] = st.slider('Age (years)', min_value=0, max_value=100, value=50)
-    user_inputs_sidebar['weight'] = st.slider('Weight (kg)', min_value=0.0, max_value=200.0, value=100.0, step=0.5)
+    user_inputs_sidebar['age'] = st.slider('Age (years)', min_value=0, max_value=120, value=30)
+    user_inputs_sidebar['weight'] = st.slider('Weight (kg)', min_value=10.0, max_value=200.0, value=70.0, step=0.5)
     selected_gender_name = st.selectbox('Gender', options=list(gender_options.keys()))
     user_inputs_sidebar['gender_encoded'] = gender_options[selected_gender_name]
     submit_button_sidebar = st.form_submit_button(label='Update Patient Info')
@@ -128,12 +125,26 @@ with st.sidebar.form(key='sidebar_form'):
 st.header('Patient Symptoms')
 with st.form(key='prediction_form'):
     user_inputs_main = user_inputs_sidebar.copy()
-
-
-    # Use selectbox for the remaining 41 boolean features
-    boolean_features = [f'symptom_{i}' for i in range(1, 42)] # Placeholder for your 41 features
+    
+    # Get a list of the 41 boolean feature names from the dictionary keys
+    boolean_features = [
+        'high_temperature', 'fever_48hrs', 'fever_in_the_last_7days',
+        'loss_of_weight', 'headache', 'nausea', 'vomiting', 'joint_pain',
+        'joint_swelling', 'muscle_pain', 'chest_pain', 'back_pain',
+        'loss_of_consciousness', 'loss_of_appetite', 'skin_rash',
+        'morbilliform_rash', 'bleeding', 'runny_nose', 'lethargy',
+        'dizzy', 'stomach_pain', 'swelling_stomach', 'throat_pain',
+        'cough', 'diarrhoea', 'retro_orbital_pain', 'shiver_cold_sensation',
+        'frequent_urination', 'Constipation', 'bleeding_nose',
+        'focal_convulsion', 'multiple_convulsions',
+        'impaired_level_of_consciousness', 'facial_flushing',
+        'facial_swelling', 'profuse_sweating', 'irrational_talking',
+        'bitter_taste_in_your_throat', 'stiffness',
+        'respiratory_distress', 'shock'
+    ]
+    
     for feature in boolean_features:
-        display_name = user_friendly_feature_names.get(feature, feature)
+        display_name = user_friendly_feature_names[feature]
         selected_bool = st.selectbox(display_name, options=list(boolean_options.keys()))
         user_inputs_main[feature] = boolean_options[selected_bool]
     
