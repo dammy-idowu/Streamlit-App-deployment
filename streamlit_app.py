@@ -105,8 +105,8 @@ def calculate_bootstrap_confidence_interval(model, input_data_dict, n_bootstraps
 
 # --- Streamlit App Layout ---
 st.set_page_config(page_title="Custom Disease Prediction App")
-st.title('🤖DocPal App')
-st.write('Enter the patient\'s symptoms to get a disease prediction.')
+st.title('🤖 DocPal App')
+st.write('_Enter the patient\'s symptoms to get a disease prediction_')
 st.info('DocPal! Your disease diagnostic assistant :sparkles:')
 
 # App use instruction
@@ -125,7 +125,7 @@ with st.sidebar.form(key='sidebar_form'):
     user_inputs_sidebar = {}
     selected_hc_name = st.selectbox('Health Centre', options=list(health_centre_options.keys()))
     user_inputs_sidebar['health_centre'] = health_centre_options[selected_hc_name]
-    user_inputs_sidebar['age'] = st.slider('Age (years)', min_value=0, max_value=120, value=30)
+    user_inputs_sidebar['age'] = st.slider('Age (years)', min_value=0, max_value=120, value=50)
     user_inputs_sidebar['weight'] = st.slider('Weight (kg)', min_value=10.0, max_value=200.0, value=70.0, step=0.5)
     selected_gender_name = st.selectbox('Gender', options=list(gender_options.keys()))
     user_inputs_sidebar['gender_encoded'] = gender_options[selected_gender_name]
