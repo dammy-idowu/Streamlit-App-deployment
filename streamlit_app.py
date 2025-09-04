@@ -105,7 +105,7 @@ def calculate_bootstrap_confidence_interval(model, input_data_dict, n_bootstraps
 
 # --- Streamlit App Layout ---
 st.set_page_config(page_title="Custom Disease Prediction App")
-st.title(':female-doctor: DocPal App')
+st.title(':robot_face: DocPal App')
 st.write('Enter the patient\'s symptoms to get a disease prediction.')
 st.info('DocPal! Your disease diagnostic assistant :sparkles:')
 
