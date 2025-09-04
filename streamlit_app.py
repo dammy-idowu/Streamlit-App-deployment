@@ -15,9 +15,9 @@ except FileNotFoundError:
 # --- Define custom name mappings ---
 user_friendly_feature_names = {
     'health_centre': 'Health Centre',
-    'gender': 'Gender',
     'age': 'Age (years)',
     'weight': 'Weight (kg)',
+    'gender_encoded': 'Gender',
     'high_temperature': 'High body temperature',
     'fever_48hrs': 'Had fever for more than 48 hours',
     'fever_in_the_last_7days': 'Had fever in the last 7 days',
@@ -61,7 +61,6 @@ user_friendly_feature_names = {
     'shock': 'Shock'
 }
 
-# --- NEW DISEASE MAPPING ---
 user_friendly_disease_names = {
     '4': ['Malaria', 'Dengue'],
     '8': ['Malaria', 'Thyphoid Fever'],
@@ -77,7 +76,6 @@ user_friendly_disease_names = {
     '12': ['Other diseases'],
     '6': ['Malaria', 'Dengue', 'Typhoid Fever']
 }
-
 
 # --- Define specific widget options and mappings ---
 gender_options = {'Female': 0, 'Male': 1}
@@ -108,7 +106,6 @@ def calculate_bootstrap_confidence_interval(model, input_data, n_bootstraps=1000
 # --- Streamlit App Layout ---
 st.set_page_config(page_title="Custom Disease Prediction App")
 st.title('Disease Prediction App')
-st.info('Your disease diagnostic assistant')
 st.write('Enter the patient\'s symptoms to get a disease prediction.')
 
 # --- Create the sidebar for basic patient info ---
@@ -120,7 +117,7 @@ with st.sidebar.form(key='sidebar_form'):
     user_inputs_sidebar['age'] = st.slider('Age (years)', min_value=0, max_value=120, value=30)
     user_inputs_sidebar['weight'] = st.slider('Weight (kg)', min_value=10.0, max_value=200.0, value=70.0, step=0.5)
     selected_gender_name = st.selectbox('Gender', options=list(gender_options.keys()))
-    user_inputs_sidebar['gender'] = gender_options[selected_gender_name]
+    user_inputs_sidebar['gender_encoded'] = gender_options[selected_gender_name]
     submit_button_sidebar = st.form_submit_button(label='Update Patient Info')
 
 # --- User input form for symptoms in the main area ---
@@ -154,6 +151,7 @@ with st.form(key='prediction_form'):
 # --- Prediction and Output ---
 if submit_button_main:
     try:
+        # Create a DataFrame from the dictionary, ensuring it's 2D
         input_data = pd.DataFrame([user_inputs_main])
         input_data = input_data.apply(pd.to_numeric, errors='coerce')
         
@@ -162,13 +160,29 @@ if submit_button_main:
         else:
             st.subheader('Prediction Result')
 
+            # Ensure the order of columns matches the training data
+            # This is a crucial step to prevent errors if the feature order differs.
+            # Assume 'X_train' was used to get the original column order.
+            # You might need to load this order from a file if not available.
+            # For this example, we assume `best_model`'s feature names are known.
+            # A more robust approach would save the column order.
+            
+            # Use `best_model.feature_names_in_` if available (sklearn 1.0+)
+            try:
+                model_features = list(best_model.feature_names_in_)
+            except AttributeError:
+                # Fallback if feature_names_in_ is not available
+                model_features = list(input_data.columns) # Assuming input order is correct
+            
+            input_data = input_data[model_features]
+
             probabilities = best_model.predict_proba(input_data)
             row_sums = probabilities.sum(axis=1, keepdims=True)
             safe_probabilities = np.where(row_sums == 0, 0, probabilities / row_sums)
             safe_probabilities = np.nan_to_num(safe_probabilities)
 
-            predicted_class_index = np.argmax(safe_probabilities, axis=1)
-            original_predicted_disease_label = str(predicted_class_index[0])
+            predicted_class_index = np.argmax(safe_probabilities, axis=1)[0]
+            original_predicted_disease_label = str(predicted_class_index)
             
             display_predicted_diseases = user_friendly_disease_names.get(
                 original_predicted_disease_label, 
