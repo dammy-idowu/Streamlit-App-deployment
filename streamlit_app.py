@@ -110,7 +110,7 @@ def calculate_bootstrap_confidence_interval(model, input_data_dict, n_bootstraps
 image_banner = Image.open('Images/docpal_banner1.png')                                       # image for top banner
 st.image(image_banner, use_container_width=True)
 
-st.set_page_config(page_title="Custom Disease Prediction App")
+st.set_page_config(layout="wide")                                                            # st.set_page_config sets up App page configuration
 st.title('🤖 DocPal App')                                                                    # Streamlit St.title function, used to call App name
 st.write('_Enter patient\'s symptoms to get a disease prediction_')                          # Stramlit st.write function, used for documenting information about App
 st.info('***DocPal! Your disease diagnostic assistant*** :sparkles:')                        # Streamlit st.info function, used for documenting information about App
