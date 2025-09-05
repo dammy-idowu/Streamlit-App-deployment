@@ -42,17 +42,17 @@ This project provides an interactive web application for predicting a patient's 
 
 ## 📂 Project Structure
 
-├── app.py-------------------                      # The main Streamlit application script.
+├── app.py -------------------                      # the main Streamlit application script.
 
-├── best_model.pkl-------------------              # The trained machine learning model.
+├── best_model.pkl -------------------              # the trained machine learning model.
 
-├── label_encoder.pkl..................           # The LabelEncoder used for target variable.
+├── label_encoder.pkl -------------------          # the LabelEncoder used for target variable.
 
-├── X_train.pkl                 # Training features used for bootstrapping.
+├── X_train.pkl -------------------                 # training features used for bootstrapping.
 
-├── y_train.pkl                 # Training labels used for bootstrapping.
+├── y_train.pkl -------------------                 # training labels used for bootstrapping.
 
-└── README.md                   # This documentation file.
+└── README.md -------------------                  # this documentation file.
 
 
 
