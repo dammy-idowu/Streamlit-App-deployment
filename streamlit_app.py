@@ -4,6 +4,7 @@ import pandas as pd
 import joblib
 import numpy as np
 from scipy import stats
+from PIL import Image
 
 # --- Load the saved objects ---
 try:
