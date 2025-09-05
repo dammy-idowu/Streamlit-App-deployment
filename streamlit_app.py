@@ -111,6 +111,13 @@ st.title('🤖 DocPal App')                                                     
 st.write('_Enter patient\'s symptoms to get a disease prediction_')                          # Stramlit st.write function, used for documenting information about App
 st.info('***DocPal! Your disease diagnostic assistant*** :sparkles:')                        # Streamlit st.info function, used for documenting information about App
 
+# --- Insert images in App layout ---
+image_sidebar = Image.open('Images/docpal_side_banner.png')                                  # image for sidebar
+st.sidebar.image(image_sidebar, use_column_width=True)
+
+image_banner = Image.open('Images/docpal_banner1.png')                                       # image for top banner
+st.image(image_banner, use_column_width=True)
+
 # App use instruction
 with st.expander(' :rotating_light:  Instruction on how to use the DocPal app  '):
     st.write(':one: Click on the sidebar icon at the top left corner of your screen')
