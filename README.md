@@ -108,3 +108,7 @@ Contributions to this project are welcome. Please submit a pull request with a d
 This project is licensed under the MIT License.
 
 
+
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://dammyidowu-docpal.streamlit.app/)
+
+
