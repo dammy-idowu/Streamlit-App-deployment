@@ -3,23 +3,60 @@
 ⬆️ (Replace above with your app's name)
 ```
 
-Description of the app ...
+## 🤖: Disease Prediction App
+This project provides an interactive web application for predicting a patient's disease(s) based on their symptoms and other demographic information. The application is built with Streamlit and uses a pre-trained machine learning model to generate predictions with confidence intervals.
 
-## Demo App
+## 🌟 Features
+`Interactive Interface`: A user-friendly web interface built with Streamlit for easy user interaction.
+Comprehensive Input: Collects various patient details, including basic information (age, gender, weight, health center) and a list of specific symptoms.
+Predictive Modeling: Utilizes a machine learning model to predict a patient's disease based on the provided inputs.
+Multi-Label Prediction: Supports multi-label classification, allowing for the prediction of multiple diseases simultaneously (e.g., Malaria and Dengue).
+Confidence Intervals: Provides confidence intervals for each prediction, offering a measure of uncertainty and robustness.
+Clear Results: Displays the prediction outcomes in an easy-to-understand format, including predicted probabilities for each disease.
+Robust Error Handling: The app includes robust error handling to manage invalid user input and ensure a smooth user experience.
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://Streamlit-App-deployment.streamlit.app/)
+## ⚙️ Technologies
+Python: The core programming language.
+Streamlit: For building the interactive web application.
+Scikit-learn: For the machine learning model and related functionalities.
+Pandas & NumPy: For data manipulation and numerical operations.
+Joblib: For efficient serialization and deserialization of the machine learning model and preprocessors.
+SciPy: For statistical calculations used in bootstrapping.
 
-## GitHub Codespaces
+## 📂 Project Structure
+.
+├── app.py                      # The main Streamlit application script.
+├── best_model.pkl              # The trained machine learning model.
+├── label_encoder.pkl           # The LabelEncoder used for target variable.
+├── X_train.pkl                 # Training features used for bootstrapping.
+├── y_train.pkl                 # Training labels used for bootstrapping.
+└── README.md                   # This documentation file.
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/app-starter-kit?quickstart=1)
+🚀 Installation
+To set up and run this project, libraries used in the project were stored in requirements.txt file.
+The following python libraries were used:
+- streamlit
+- numpy
+- pandas
+- scikit-learn
+- joblib
+- scipy
+- Image
 
-## Section Heading
+## 📖 Usage
+To run the Streamlit web application, click `docpal.streamlit.app`
 
-This is filler text, please replace this with text for this section.
+The app will open in your default web browser.
 
-## Further Reading
+## How to use the app:
+`Sidebar Input`: Use the sidebar to input basic patient information, such as age, gender, and weight.
+### `Main Form`: In the main content area, use the dropdown menus to select "True" or "False" for each symptom.
+**Get Prediction**: Click the **"Get Prediction"** button to see the model's output.
 
-This is filler text, please replace this with a explanatory text about further relevant resources for this repo
-- Resource 1
-- Resource 2
-- Resource 3
+## 🤝 Contribution
+Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
+
+📄 License
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+
