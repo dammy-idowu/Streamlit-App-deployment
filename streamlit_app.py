@@ -111,7 +111,7 @@ image_banner = Image.open('Images/docpal_banner1.png')                          
 st.image(image_banner, use_container_width=True)
 
 st.set_page_config(layout="wide")                                                            # st.set_page_config sets up App page configuration
-st.title('🤖 DocPal App')                                                                    # Streamlit St.title function, used to call App name
+st.markdown("<h1 style='text-align: center;'>🤖 DocPal App</h1>", unsafe_allow_html=True)   # Streamlit St.markdown function, used to call and centralize App name
 st.write('_Enter patient\'s symptoms to get a disease prediction_')                          # Stramlit st.write function, used for documenting information about App
 st.info('***DocPal! Your disease diagnostic assistant*** :sparkles:')                        # Streamlit st.info function, used for documenting information about App
 
