@@ -1,6 +1,6 @@
 # 📦 Disease Diagnostic App (DocPal)
 ```
-
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://dammyidowu-docpal.streamlit.app/)
 ```
 
 ## 🤖 Disease Prediction App
@@ -54,6 +54,7 @@ This project provides an interactive web application for predicting a patient's 
 
 
 
+
 🚀 Installation
 
 To set up and run this project, libraries used in the project were stored in requirements.txt file.
@@ -75,11 +76,13 @@ The following python libraries were used:
 - Image
 
 
+
 ## 📖 Usage
 
 To run the Streamlit web application, click `docpal.streamlit.app`
 
 The app will open in your default web browser.
+
 
 
 ## How to use the app:
@@ -91,12 +94,14 @@ The app will open in your default web browser.
 `Get Prediction`: Click the **"Get Prediction"** button to see the model's output.
 
 
+
 ## 🤝 Contribution
 
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
 
 
-📄 License
+
+## 📄 License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
 
