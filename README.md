@@ -1,7 +1,7 @@
 # 📦 Disease Diagnostic App (DocPal)
 ```
 
-[docpal.streamlit.app)
+docpal.streamlit.app
 
 ```
 
