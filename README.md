@@ -112,3 +112,5 @@ This project is licensed under the MIT License.
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://dammyidowu-docpal.streamlit.app/)
 
 
+
+#### ⚠️ Disclaimer: This medical app is for informational purposes only and should not be considered as medical advice; users are advised to consult a qualified healthcare professional before making any medical decisions. Healthcare practitioners are recommended to validate the app's predictions with confirmatory lab tests or other diagnostic procedures to ensure accurate diagnosis and treatment.
