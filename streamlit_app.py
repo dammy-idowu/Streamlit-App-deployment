@@ -3,7 +3,6 @@ import streamlit as st
 import pandas as pd
 import joblib
 import numpy as np
-import time
 from scipy import stats
 from PIL import Image
 
