@@ -168,25 +168,8 @@ with st.form(key='prediction_form'):
         selected_bool = st.selectbox(display_name, options=list(boolean_options.keys()))        # Streamlit st.selectbox function is assigned to each feature
         user_inputs_main[feature] = boolean_options[selected_bool]                              # Assign boolean values to th features using the st.selectbox input mechanism
     
-    #submit_button_main = st.form_submit_button(label='Get Prediction')                          # Streamlit button function to get prediction
-    def run_prediction():
-        """A function to simulate the prediction process."""
-        with st.spinner("Calculating prediction..."):
-            time.sleep(2)  # Simulate a long calculation
-            st.success("Prediction complete!")
-
-# Define the form
-    with st.form("my_form"):
-        st.write("Inside the form")
-    # Add other widgets for user input here
+    submit_button_main = st.form_submit_button(label='Get Prediction')                          # Streamlit button function to get prediction
     
-    # Define the submit button
-        submit_button_main = st.form_submit_button(label='Get Prediction')
-    
-    # Check if the button was clicked
-    if submit_button_main:
-        # Call the prediction function when the button is clicked
-        run_prediction()
 # --- Prediction and Output ---
 if submit_button_main:
     try:
