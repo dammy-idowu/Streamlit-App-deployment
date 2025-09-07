@@ -85,6 +85,15 @@ The following python libraries were used:
 
 
 
+## 🧑‍💻 Code
+
+Code for streamlit application can be found in `streamlit_app` in directory
+
+Code for data wrangling and model selection can be found in `Disease Diagnosis using Patient-Reported Symptoms` in directory
+
+
+
+
 ## 📖 Usage
 
 To run the Streamlit web application, click `docpal.streamlit.app`
