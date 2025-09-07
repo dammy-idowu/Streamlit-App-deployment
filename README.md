@@ -87,7 +87,7 @@ The following python libraries were used:
 
 ## 🧑‍💻 Code
 
-Code for streamlit application can be found in `streamlit_app` in directory
+Code for streamlit application can be found in `streamlit_app.py` in directory
 
 Code for data wrangling and modelling can be found in `Disease Diagnosis using Patient-Reported Symptoms` in directory
 
