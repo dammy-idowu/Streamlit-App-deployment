@@ -5,7 +5,7 @@ docpal.streamlit.app
 
 ```
 
-## 🤖 Disease Prediction App
+## 🤖 Disease Prediction Project
 This project provides an interactive web application for predicting a patient's disease(s) based on their symptoms and other demographic information. The application is built with Streamlit and uses a pre-trained machine learning model to generate predictions with confidence intervals.
 
 
