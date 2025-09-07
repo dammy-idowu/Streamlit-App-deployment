@@ -39,6 +39,8 @@ This project provides an interactive web application for predicting a patient's 
 
 `SciPy`: For statistical calculations used in bootstrapping.
 
+`SHAP`: SHAP (SHapley Additive exPlanations) values explain the output of any machine learning model.
+
 
 ## 📂 Project Structure
 
@@ -76,6 +78,10 @@ The following python libraries were used:
 - scipy
 
 - Image
+
+- SHAP
+
+- request
 
 
 
